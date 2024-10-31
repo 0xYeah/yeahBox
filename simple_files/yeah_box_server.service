@@ -1,0 +1,17 @@
+[Unit]
+Description=Multi Pool
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+Restart=on-failure
+RestartSec=5s
+ExecStart=/yeah_box_server/yeah_box_server
+ExecStop=/bin/kill -TERM $MAINPID
+WorkingDirectory=/yeah_box_server
+LimitNOFILE=102400
+
+[Install]
+WantedBy=multi-user.target
