@@ -5,16 +5,16 @@ import (
 	"github.com/george012/gtbox/gtbox_coding"
 	"github.com/george012/gtbox/gtbox_log"
 	"github.com/george012/gtbox/gtbox_net"
-	"github.com/wmyeah/yeah_box/config"
 	"os"
 	"os/signal"
+	"pre_app/pre_build_cfg"
 	"syscall"
 )
 
 func LoadSigHandle(cleanAction func(), testMethods []func()) {
-	if config.CurrentApp != nil && config.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
+	if pre_build_cfg.CurrentApp != nil && pre_build_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
 		testMethod(testMethods)
-	} else if config.CurrentApp == nil {
+	} else if pre_build_cfg.CurrentApp == nil {
 		testMethod(testMethods)
 	}
 	// 创建一个信号通道

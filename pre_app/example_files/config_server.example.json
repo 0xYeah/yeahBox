@@ -1,0 +1,10 @@
+{
+    "run_with": "server",
+    "api": {
+        "enabled": true,
+        "port": 17174,
+        "user_agent_allowed": null,
+        "api_methods_allowed": null
+    },
+    "upload_dir": "./uploads"
+}
