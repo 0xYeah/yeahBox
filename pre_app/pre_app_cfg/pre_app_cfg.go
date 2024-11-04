@@ -1,4 +1,4 @@
-package pre_build_cfg
+package pre_app_cfg
 
 import (
 	"errors"

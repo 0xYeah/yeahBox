@@ -11,7 +11,7 @@ import (
 	"pre_app/api/api_request"
 	"pre_app/api/api_response"
 	"pre_app/api/api_rpc"
-	"pre_app/pre_build_cfg"
+	"pre_app/pre_app_cfg"
 	"strings"
 )
 
@@ -90,7 +90,7 @@ func Middleware(next http.Handler) http.Handler {
 		// 不符合指定UA，返回失败响应
 		err = errors.New(fmt.Sprintf("%s,%s", "permission denied:", r.RemoteAddr))
 
-		if pre_build_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug || pre_build_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeTest {
+		if pre_app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug || pre_app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeTest {
 			gtbox_log.LogDebugf("permission denied body: %v", body)
 			gtbox_log.LogDebugf("permission denied body: %v", reqModel)
 		}

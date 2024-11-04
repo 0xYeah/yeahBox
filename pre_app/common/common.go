@@ -7,14 +7,14 @@ import (
 	"github.com/george012/gtbox/gtbox_net"
 	"os"
 	"os/signal"
-	"pre_app/pre_build_cfg"
+	"pre_app/pre_app_cfg"
 	"syscall"
 )
 
 func LoadSigHandle(cleanAction func(), testMethods []func()) {
-	if pre_build_cfg.CurrentApp != nil && pre_build_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
+	if pre_app_cfg.CurrentApp != nil && pre_app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
 		testMethod(testMethods)
-	} else if pre_build_cfg.CurrentApp == nil {
+	} else if pre_app_cfg.CurrentApp == nil {
 		testMethod(testMethods)
 	}
 	// 创建一个信号通道

@@ -6,9 +6,10 @@ import (
 	"github.com/george012/gtbox/gtbox_cmd"
 	"github.com/george012/gtbox/gtbox_log"
 	"github.com/wmyeah/yeah_box/config"
+	"pre_app/api"
 	"pre_app/common"
 	"pre_app/custom_cmd"
-	"pre_app/pre_build_cfg"
+	"pre_app/pre_app_cfg"
 	"time"
 )
 
@@ -54,13 +55,13 @@ func setupApp() {
 	bundleID := fmt.Sprintf("%s_%s", config.ProjectBundleID, mRunWith)
 	description := fmt.Sprintf("%s %s", config.ProjectName, mRunWith)
 
-	pre_build_cfg.CurrentApp = pre_build_cfg.NewApp(projectName, bundleID, description, runMode)
+	pre_app_cfg.CurrentApp = pre_app_cfg.NewApp(projectName, bundleID, description, runMode)
 
-	pre_build_cfg.CurrentApp.CurrentRunWith = pre_build_cfg.YeahBoxRunWith(mRunWith)
-	pre_build_cfg.CurrentApp.AppConfigFilePath = fmt.Sprintf("./conf/config_%s.json", pre_build_cfg.CurrentApp.CurrentRunWith)
+	pre_app_cfg.CurrentApp.CurrentRunWith = pre_app_cfg.YeahBoxRunWith(mRunWith)
+	pre_app_cfg.CurrentApp.AppConfigFilePath = fmt.Sprintf("./conf/config_%s.json", pre_app_cfg.CurrentApp.CurrentRunWith)
 
 	//	TODO 初始化gtbox及log分片
-	if pre_build_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
+	if pre_app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
 		cmdMap := map[string]string{
 			"git_commit_hash": "git show -s --format=%H",
 			"git_commit_time": "git show -s --format=\"%ci\" | cut -d ' ' -f 1,2 | sed 's/ /_/'",
@@ -78,20 +79,20 @@ func setupApp() {
 		}
 	}
 
-	pre_build_cfg.CurrentApp.GitCommitHash = mGitCommitHash
-	pre_build_cfg.CurrentApp.GitCommitTime = mGitCommitTime
-	pre_build_cfg.CurrentApp.GoVersion = mGoVersion
-	pre_build_cfg.CurrentApp.PackageOS = mPackageOS
-	pre_build_cfg.CurrentApp.PackageTime = mPackageTime
+	pre_app_cfg.CurrentApp.GitCommitHash = mGitCommitHash
+	pre_app_cfg.CurrentApp.GitCommitTime = mGitCommitTime
+	pre_app_cfg.CurrentApp.GoVersion = mGoVersion
+	pre_app_cfg.CurrentApp.PackageOS = mPackageOS
+	pre_app_cfg.CurrentApp.PackageTime = mPackageTime
 
-	custom_cmd.HandleCustomCmds(pre_build_cfg.CurrentApp)
+	custom_cmd.HandleCustomCmds(pre_app_cfg.CurrentApp)
 
-	gtbox.SetupGTBox(pre_build_cfg.CurrentApp.AppName,
-		pre_build_cfg.CurrentApp.CurrentRunMode,
-		pre_build_cfg.CurrentApp.AppLogPath,
+	gtbox.SetupGTBox(pre_app_cfg.CurrentApp.AppName,
+		pre_app_cfg.CurrentApp.CurrentRunMode,
+		pre_app_cfg.CurrentApp.AppLogPath,
 		30,
 		gtbox_log.GTLogSaveHours,
-		int(pre_build_cfg.CurrentApp.HTTPRequestTimeOut.Seconds()),
+		int(pre_app_cfg.CurrentApp.HTTPRequestTimeOut.Seconds()),
 	)
 
 	gtbox_log.LogDebugf("this is debug log test")
@@ -101,12 +102,14 @@ func setupApp() {
 func main() {
 	setupApp()
 
-	pre_build_cfg.SyncConfigFile(func(err error) {
+	pre_app_cfg.SyncConfigFile(func(err error) {
 		if err != nil {
 			gtbox_log.LogDebugf("%s", err.Error())
 			common.ExitApp()
 		}
 	})
+
+	api.StartAPIService(&pre_app_cfg.GlobalConfig.Api)
 
 	common.LoadSigHandle(nil, nil)
 
