@@ -2,14 +2,14 @@ package base_app
 
 import (
 	"fmt"
+	"github.com/0xYeah/yeahBox/base_app/api"
+	"github.com/0xYeah/yeahBox/base_app/app_cfg"
+	"github.com/0xYeah/yeahBox/base_app/common"
+	"github.com/0xYeah/yeahBox/base_app/custom_cmd"
+	"github.com/0xYeah/yeahBox/config"
 	"github.com/george012/gtbox"
 	"github.com/george012/gtbox/gtbox_cmd"
 	"github.com/george012/gtbox/gtbox_log"
-	"github.com/wmyeah/yeah_box/base_app/api"
-	"github.com/wmyeah/yeah_box/base_app/app_cfg"
-	"github.com/wmyeah/yeah_box/base_app/common"
-	"github.com/wmyeah/yeah_box/base_app/custom_cmd"
-	"github.com/wmyeah/yeah_box/config"
 	"time"
 )
 

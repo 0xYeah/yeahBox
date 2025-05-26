@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/wmyeah/yeah_box/base_app"
-	"github.com/wmyeah/yeah_box/base_app/app_cfg"
+	"github.com/0xYeah/yeahBox/base_app"
+	"github.com/0xYeah/yeahBox/base_app/app_cfg"
 )
 
 func main() {

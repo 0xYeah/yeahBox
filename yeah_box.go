@@ -1,8 +1,8 @@
-package yeah_box
+package yeahBox
 
 import (
 	"fmt"
-	"github.com/wmyeah/yeah_box/config"
+	"github.com/0xYeah/yeahBox/config"
 )
 
 func GetVersion() string {

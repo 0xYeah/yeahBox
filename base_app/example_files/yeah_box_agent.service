@@ -8,9 +8,9 @@ Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStart=/yeah_box_agent/yeah_box_agent
+ExecStart=/yeahBox_agent/yeahBox_agent
 ExecStop=/bin/kill -TERM $MAINPID
-WorkingDirectory=/yeah_box_agent
+WorkingDirectory=/yeahBox_agent
 LimitNOFILE=102400
 
 [Install]

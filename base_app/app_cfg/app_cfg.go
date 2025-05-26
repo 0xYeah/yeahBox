@@ -3,10 +3,10 @@ package app_cfg
 import (
 	"encoding/json"
 	"errors"
+	"github.com/0xYeah/yeahBox/base_app/api/api_config"
 	"github.com/george012/gtbox"
 	"github.com/george012/gtbox/gtbox_app"
 	"github.com/george012/gtbox/gtbox_log"
-	"github.com/wmyeah/yeah_box/base_app/api/api_config"
 	"os"
 	"path/filepath"
 )

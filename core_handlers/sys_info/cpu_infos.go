@@ -2,8 +2,8 @@ package sys_info
 
 import (
 	"fmt"
+	"github.com/0xYeah/yeahBox/core_handlers/brand_flag"
 	"github.com/shirou/gopsutil/v4/cpu"
-	"github.com/wmyeah/yeah_box/core_handlers/brand_flag"
 	"strconv"
 	"strings"
 	"time"

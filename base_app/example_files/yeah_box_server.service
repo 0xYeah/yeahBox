@@ -8,9 +8,9 @@ Type=simple
 User=root
 Restart=on-failure
 RestartSec=5s
-ExecStart=/yeah_box_server/yeah_box_server
+ExecStart=/yeahBox_server/yeahBox_server
 ExecStop=/bin/kill -TERM $MAINPID
-WorkingDirectory=/yeah_box_server
+WorkingDirectory=/yeahBox_server
 LimitNOFILE=102400
 
 [Install]

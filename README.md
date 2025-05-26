@@ -1,4 +1,4 @@
-# yeah_box
+# yeahBox
 
 # Goland IDE config
 * `server` at `Go tool argument` input with:

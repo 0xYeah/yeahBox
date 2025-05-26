@@ -2,9 +2,9 @@ package custom_cmd
 
 import (
 	"fmt"
+	"github.com/0xYeah/yeahBox/base_app/app_cfg"
+	"github.com/0xYeah/yeahBox/base_app/common"
 	"github.com/george012/gtbox"
-	"github.com/wmyeah/yeah_box/base_app/app_cfg"
-	"github.com/wmyeah/yeah_box/base_app/common"
 	"os"
 	"strings"
 )

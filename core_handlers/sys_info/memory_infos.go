@@ -2,8 +2,8 @@ package sys_info
 
 import (
 	"fmt"
+	"github.com/0xYeah/yeahBox/unit_tools"
 	"github.com/shirou/gopsutil/v4/mem"
-	"github.com/wmyeah/yeah_box/unit_tools"
 	"math/big"
 )
 

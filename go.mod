@@ -1,4 +1,4 @@
-module github.com/wmyeah/yeah_box
+module github.com/0xYeah/yeahBox
 
 go 1.23.0
 

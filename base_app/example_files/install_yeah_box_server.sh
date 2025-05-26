@@ -2,7 +2,7 @@
 
 set -e
 
-APP_NAME=yeah_box_server
+APP_NAME=yeahBox_server
 configFIleName=config.json
 APP_DIR="/${APP_NAME}"
 # systemd 服务路径

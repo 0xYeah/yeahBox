@@ -2,13 +2,13 @@ package api
 
 import (
 	"fmt"
+	"github.com/0xYeah/yeahBox/base_app/api/api_config"
+	"github.com/0xYeah/yeahBox/base_app/api/api_handler"
+	"github.com/0xYeah/yeahBox/base_app/app_cfg"
+	"github.com/0xYeah/yeahBox/config"
 	"github.com/george012/gtbox/gtbox_log"
 	"github.com/george012/gtbox/gtbox_net"
 	"github.com/gorilla/mux"
-	"github.com/wmyeah/yeah_box/base_app/api/api_config"
-	"github.com/wmyeah/yeah_box/base_app/api/api_handler"
-	"github.com/wmyeah/yeah_box/base_app/app_cfg"
-	"github.com/wmyeah/yeah_box/config"
 	"net/http"
 )
 

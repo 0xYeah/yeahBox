@@ -1,4 +1,4 @@
-package yeah_box
+package yeahBox
 
 import (
 	"fmt"
