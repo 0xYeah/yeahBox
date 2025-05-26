@@ -1,15 +1,15 @@
-package main
+package base_app
 
 import (
 	"fmt"
 	"github.com/george012/gtbox"
 	"github.com/george012/gtbox/gtbox_cmd"
 	"github.com/george012/gtbox/gtbox_log"
+	"github.com/wmyeah/yeah_box/base_app/api"
+	"github.com/wmyeah/yeah_box/base_app/app_cfg"
+	"github.com/wmyeah/yeah_box/base_app/common"
+	"github.com/wmyeah/yeah_box/base_app/custom_cmd"
 	"github.com/wmyeah/yeah_box/config"
-	"pre_app/api"
-	"pre_app/common"
-	"pre_app/custom_cmd"
-	"pre_app/pre_app_cfg"
 	"time"
 )
 
@@ -20,7 +20,6 @@ var (
 	mPackageOS     = ""
 	mPackageTime   = ""
 	mGoVersion     = ""
-	mRunWith       = ""
 )
 
 // setupApp 设置默认App
@@ -31,7 +30,7 @@ var (
 // acceptArgsCallBack 自定义 args 放行的回调 自定义args 相关后续操作可以在这里执行
 // Simole 1:
 // common.SetupApp("testQueryCPU", "com.testing.testQueryCPU", "test Query CPU", nil, nil)
-func setupApp() {
+func setupApp(appType app_cfg.AppType) {
 	runMode := gtbox.RunModeDebug
 	switch mRunMode {
 	case "debug":
@@ -44,24 +43,18 @@ func setupApp() {
 		runMode = gtbox.RunModeDebug
 	}
 
-	if mRunWith != "agent" && mRunWith != "server" {
-		fmt.Print("!!!---error---!!!: banary is not server or agent\n")
-		fmt.Print("!!!---error---!!!: banary is not server or agent\n")
-		fmt.Print("!!!---error---!!!: banary is not server or agent\n")
-		common.ExitApp()
-	}
+	projectName := fmt.Sprintf("%s_%s", config.ProjectName)
+	bundleID := fmt.Sprintf("%s_%s", config.ProjectBundleID)
+	description := fmt.Sprintf("%s %s", config.ProjectName)
 
-	projectName := fmt.Sprintf("%s_%s", config.ProjectName, mRunWith)
-	bundleID := fmt.Sprintf("%s_%s", config.ProjectBundleID, mRunWith)
-	description := fmt.Sprintf("%s %s", config.ProjectName, mRunWith)
+	cfgPath := fmt.Sprintf("./conf/config_%s.yaml", appType)
 
-	pre_app_cfg.CurrentApp = pre_app_cfg.NewApp(projectName, bundleID, description, runMode)
+	app_cfg.CurrentApp = app_cfg.NewApp(projectName, cfgPath, bundleID, description, runMode)
 
-	pre_app_cfg.CurrentApp.CurrentRunWith = pre_app_cfg.YeahBoxRunWith(mRunWith)
-	pre_app_cfg.CurrentApp.AppConfigFilePath = fmt.Sprintf("./conf/config_%s.json", pre_app_cfg.CurrentApp.CurrentRunWith)
+	app_cfg.CurrentApp.AppConfigFilePath = fmt.Sprintf("./conf/config_%s.json", app_cfg.CurrentApp.AppType)
 
 	//	TODO 初始化gtbox及log分片
-	if pre_app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
+	if app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
 		cmdMap := map[string]string{
 			"git_commit_hash": "git show -s --format=%H",
 			"git_commit_time": "git show -s --format=\"%ci\" | cut -d ' ' -f 1,2 | sed 's/ /_/'",
@@ -79,38 +72,37 @@ func setupApp() {
 		}
 	}
 
-	pre_app_cfg.CurrentApp.GitCommitHash = mGitCommitHash
-	pre_app_cfg.CurrentApp.GitCommitTime = mGitCommitTime
-	pre_app_cfg.CurrentApp.GoVersion = mGoVersion
-	pre_app_cfg.CurrentApp.PackageOS = mPackageOS
-	pre_app_cfg.CurrentApp.PackageTime = mPackageTime
+	app_cfg.CurrentApp.GitCommitHash = mGitCommitHash
+	app_cfg.CurrentApp.GitCommitTime = mGitCommitTime
+	app_cfg.CurrentApp.GoVersion = mGoVersion
+	app_cfg.CurrentApp.PackageOS = mPackageOS
+	app_cfg.CurrentApp.PackageTime = mPackageTime
 
-	custom_cmd.HandleCustomCmds(pre_app_cfg.CurrentApp)
+	custom_cmd.HandleCustomCmds(app_cfg.CurrentApp)
 
-	gtbox.SetupGTBox(pre_app_cfg.CurrentApp.AppName,
-		pre_app_cfg.CurrentApp.CurrentRunMode,
-		pre_app_cfg.CurrentApp.AppLogPath,
+	gtbox.SetupGTBox(app_cfg.CurrentApp.AppName,
+		app_cfg.CurrentApp.CurrentRunMode,
+		app_cfg.CurrentApp.AppLogPath,
 		30,
 		gtbox_log.GTLogSaveHours,
-		int(pre_app_cfg.CurrentApp.HTTPRequestTimeOut.Seconds()),
+		app_cfg.CurrentApp.HTTPRequestTimeOut,
 	)
 
 	gtbox_log.LogDebugf("this is debug log test")
 
 }
 
-func main() {
-	setupApp()
+func StartAppWithAppType(appType app_cfg.AppType) {
+	setupApp(appType)
 
-	pre_app_cfg.SyncConfigFile(func(err error) {
+	app_cfg.SyncConfigFile(app_cfg.CurrentApp.AppConfigFilePath, func(err error) {
 		if err != nil {
 			gtbox_log.LogDebugf("%s", err.Error())
 			common.ExitApp()
 		}
 	})
 
-	api.StartAPIService(&pre_app_cfg.GlobalConfig.Api)
+	api.StartAPIService(&app_cfg.GlobalConfig.Api)
 
 	common.LoadSigHandle(nil, nil)
-
 }

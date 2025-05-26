@@ -1,22 +1,15 @@
 package common
 
 import (
-	"github.com/george012/gtbox"
 	"github.com/george012/gtbox/gtbox_coding"
 	"github.com/george012/gtbox/gtbox_log"
 	"github.com/george012/gtbox/gtbox_net"
 	"os"
 	"os/signal"
-	"pre_app/pre_app_cfg"
 	"syscall"
 )
 
 func LoadSigHandle(cleanAction func(), testMethods []func()) {
-	if pre_app_cfg.CurrentApp != nil && pre_app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
-		testMethod(testMethods)
-	} else if pre_app_cfg.CurrentApp == nil {
-		testMethod(testMethods)
-	}
 	// 创建一个信号通道
 	chSig := make(chan os.Signal)
 	signal.Notify(chSig, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGKILL)

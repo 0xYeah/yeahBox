@@ -5,10 +5,11 @@ import (
 	"github.com/george012/gtbox/gtbox_log"
 	"github.com/george012/gtbox/gtbox_net"
 	"github.com/gorilla/mux"
+	"github.com/wmyeah/yeah_box/base_app/api/api_config"
+	"github.com/wmyeah/yeah_box/base_app/api/api_handler"
+	"github.com/wmyeah/yeah_box/base_app/app_cfg"
+	"github.com/wmyeah/yeah_box/config"
 	"net/http"
-	"pre_app/api/api_config"
-	"pre_app/api/api_handler"
-	"pre_app/pre_app_cfg"
 )
 
 var apiMethods = []string{"auth", "logout"}
@@ -22,7 +23,7 @@ func StartAPIService(apiCfg *api_config.ApiConfig) {
 
 	api_config.CurrentApiConfig = apiCfg
 
-	apiCfg.UserAgentAllowed = append(apiCfg.UserAgentAllowed, fmt.Sprintf("%s/*", pre_app_cfg.CurrentApp.AppName))
+	apiCfg.UserAgentAllowed = append(apiCfg.UserAgentAllowed, fmt.Sprintf("%s/*", app_cfg.CurrentApp.AppName))
 
 	apiCfg.APIMethodsAllowed = append(apiCfg.APIMethodsAllowed, apiMethods...)
 
@@ -37,9 +38,9 @@ func StartAPIService(apiCfg *api_config.ApiConfig) {
 		runWith := pre_app_cfg.CurrentApp.CurrentRunWith
 
 		switch runWith {
-		case pre_app_cfg.YeahBoxRunWithServer:
+		case config.YeahBoxRunWithServer:
 			loadApiMethodForServer(apiGroup, api_handler.ApiHandler)
-		case pre_app_cfg.YeahBoxRunWithAgent:
+		case config.YeahBoxRunWithAgent:
 			loadApiMethodForAgent(apiGroup, api_handler.ApiHandler)
 		}
 

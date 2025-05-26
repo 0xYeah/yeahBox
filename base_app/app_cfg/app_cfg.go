@@ -1,13 +1,43 @@
-package pre_app_cfg
+package app_cfg
 
 import (
+	"encoding/json"
 	"errors"
+	"github.com/george012/gtbox"
+	"github.com/george012/gtbox/gtbox_app"
 	"github.com/george012/gtbox/gtbox_log"
-	"github.com/goccy/go-json"
+	"github.com/wmyeah/yeah_box/base_app/api/api_config"
 	"os"
 	"path/filepath"
-	"pre_app/api/api_config"
 )
+
+type AppType string
+
+const (
+	AppTypeAgent  AppType = "agent"
+	AppTypeServer AppType = "server"
+)
+
+var (
+	CurrentApp *ExtendApp
+)
+
+type ExtendApp struct {
+	*gtbox_app.App
+	NetListenPortStratumDefault int
+	ApiPort                     int
+	AppType                     AppType
+}
+
+func NewApp(appName string, version string, bundleID string, description string, runMode gtbox.RunMode) *ExtendApp {
+	app := &ExtendApp{
+		App:                         gtbox_app.NewApp(appName, version, bundleID, description, runMode),
+		NetListenPortStratumDefault: 0,
+		ApiPort:                     apiPortDefault,
+	}
+
+	return app
+}
 
 const (
 	apiPortDefault = 17173
@@ -15,15 +45,8 @@ const (
 
 var GlobalConfig *FileConfig
 
-type YeahBoxRunWith string
-
-const (
-	YeahBoxRunWithAgent  = "agent"
-	YeahBoxRunWithServer = "server"
-)
-
 type FileConfig struct {
-	RunWith       YeahBoxRunWith       `yaml:"run_with" json:"run_with"`
+	AppType       AppType              `json:"app_type"`
 	Api           api_config.ApiConfig `yaml:"api" json:"api"`
 	BaseUploadDir string               `yaml:"upload_dir" json:"upload_dir"`
 }
@@ -72,15 +95,15 @@ func SaveConfig(file string) error {
 
 func generateDefaultConfig() *FileConfig {
 	aApiPort := apiPortDefault
-	switch CurrentApp.CurrentRunWith {
-	case YeahBoxRunWithAgent:
+	switch CurrentApp.AppType {
+	case AppTypeAgent:
 		aApiPort = apiPortDefault
-	case YeahBoxRunWithServer:
+	case AppTypeServer:
 		aApiPort = aApiPort + 1
 	}
 
 	fileCfg := &FileConfig{
-		RunWith: CurrentApp.CurrentRunWith,
+		AppType: CurrentApp.AppType,
 		Api: api_config.ApiConfig{
 			Enabled: true,
 			Port:    aApiPort,
@@ -90,7 +113,7 @@ func generateDefaultConfig() *FileConfig {
 	return fileCfg
 }
 
-func SyncConfigFile(endFunc func(error)) {
+func SyncConfigFile(configFile string, endFunc func(error)) {
 	if CurrentApp == nil {
 		endFunc(errors.New("App Not Setup "))
 		return

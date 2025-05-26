@@ -3,9 +3,9 @@ package custom_cmd
 import (
 	"fmt"
 	"github.com/george012/gtbox"
+	"github.com/wmyeah/yeah_box/base_app/app_cfg"
+	"github.com/wmyeah/yeah_box/base_app/common"
 	"os"
-	"pre_app/common"
-	"pre_app/pre_app_cfg"
 	"strings"
 )
 
@@ -13,7 +13,7 @@ var (
 	customCommands = []string{"version", "go"}
 )
 
-func versionAction(app *pre_app_cfg.ExtendApp) {
+func versionAction(app *app_cfg.ExtendApp) {
 	fmt.Printf("  名       字  :  %s\n", app.AppName)
 	fmt.Printf("  包       名  :  %s\n", app.BundleID)
 	fmt.Printf("  版       本  :  %s\n", app.Version)
@@ -32,7 +32,7 @@ func versionAction(app *pre_app_cfg.ExtendApp) {
 	fmt.Printf("构 建 时 间 UTC:  %s\n", app.PackageTime)
 }
 
-func HandleCustomCmds(sApp *pre_app_cfg.ExtendApp) {
+func HandleCustomCmds(sApp *app_cfg.ExtendApp) {
 
 	args := os.Args
 
@@ -66,7 +66,7 @@ func HandleCustomCmds(sApp *pre_app_cfg.ExtendApp) {
 		versionAction(sApp)
 	default:
 		if strings.HasPrefix(a_flag, "-test.") {
-			if pre_app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
+			if app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
 				return
 			}
 		}
