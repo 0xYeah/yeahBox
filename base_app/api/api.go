@@ -5,7 +5,6 @@ import (
 	"github.com/0xYeah/yeahBox/base_app/api/api_config"
 	"github.com/0xYeah/yeahBox/base_app/api/api_handler"
 	"github.com/0xYeah/yeahBox/base_app/app_cfg"
-	"github.com/0xYeah/yeahBox/config"
 	"github.com/george012/gtbox/gtbox_log"
 	"github.com/george012/gtbox/gtbox_net"
 	"github.com/gorilla/mux"
@@ -35,12 +34,12 @@ func StartAPIService(apiCfg *api_config.ApiConfig) {
 		muxRouter.HandleFunc("/", api_handler.HomeHandler).Methods("GET")
 		muxRouter.HandleFunc(apiGroup, api_handler.ApiHandler).Methods("POST")
 
-		runWith := pre_app_cfg.CurrentApp.CurrentRunWith
+		runWith := app_cfg.CurrentApp.AppType
 
 		switch runWith {
-		case config.YeahBoxRunWithServer:
+		case app_cfg.AppTypeServer:
 			loadApiMethodForServer(apiGroup, api_handler.ApiHandler)
-		case config.YeahBoxRunWithAgent:
+		case app_cfg.AppTypeAgent:
 			loadApiMethodForAgent(apiGroup, api_handler.ApiHandler)
 		}
 

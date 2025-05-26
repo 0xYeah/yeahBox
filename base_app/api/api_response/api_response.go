@@ -2,9 +2,9 @@ package api_response
 
 import (
 	"encoding/json"
+	"github.com/0xYeah/yeahBox/base_app/api/api_rpc"
 	"github.com/george012/gtbox/gtbox_log"
 	"net/http"
-	"pre_app/api/api_rpc"
 )
 
 func HandleResponse(w http.ResponseWriter, err error, respData interface{}, reqModel *api_rpc.RPCRequest) {

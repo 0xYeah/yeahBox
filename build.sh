@@ -6,7 +6,7 @@ Product_version_key="ProjectVersion"
 VersionFile=./config/config.go
 CURRENT_VERSION=$(grep ${Product_version_key} $VersionFile | awk -F '"' '{print $2}' | sed 's/\"//g')
 
-build_path=../build
+build_path=./build
 RUN_MODE=release
 
 UPLOAD_TMP_DIR=upload_tmp_dir
@@ -30,10 +30,9 @@ GetOSType(){
 }
 GetOSType
 
-function toBuild() {
 
-    rm -rf ${build_path}/${RUN_MODE}
-    mkdir -p ${build_path}/${RUN_MODE}
+function build_with_type() {
+    local APP_TYPE=$1
 
     go_version=$(go version | awk '{print $3}')
     commit_hash=$(git show -s --format=%H)
@@ -47,61 +46,58 @@ function toBuild() {
         formatted_time=$(date -u -d "${commit_date}" "+%Y-%m-%d_%H:%M:%S")
     fi
 
-    build_time=$(date +"%Y-%m-%d_%H:%M:%S")
-
-    local ld_flag_master="-X main.mGitCommitHash=${commit_hash} -X main.mGitCommitTime=${formatted_time} -X main.mGoVersion=${go_version} -X main.mPackageOS=${OS_TYPE} -X main.mPackageTime=${build_time} -X main.mRunMode=${RUN_MODE} -s -w"
-
-    cd ./pre_app \
-    && go mod tidy \
-    && cd ../
-
-    echo "build ${product_name}_server"
-    local ld_flag_server=$ld_flag_master" -X main.mRunWith=server"
-
-    cd ./pre_app \
-    && go build -o ${build_path}/${RUN_MODE}/${product_name}_server/${product_name}_server -trimpath -ldflags "${ld_flag_server}" ./main.go \
-    && chmod a+x ${build_path}/${RUN_MODE}/${product_name}_server/${product_name}_server \
-    && cp ./example_files/${product_name}_server.service ${build_path}/${RUN_MODE}/${product_name}_server \
-    && cp ./example_files/install_${product_name}_server.sh ${build_path}/${RUN_MODE}/${product_name}_server \
-    && mkdir -p ${build_path}/${RUN_MODE}/${product_name}_server/conf \
-    && cp ./example_files/config_server.example.json ${build_path}/${RUN_MODE}/${product_name}_server/conf/config_server.json \
-    && cd ../
+    build_time=$(date -u "+%Y-%m-%d_%H:%M:%S")
 
 
-    echo "build ${product_name}_agent"
-    local ld_flag_agent=$ld_flag_master" -X main.mRunWith=agent"
+    local ld_flag_master="-X github.com/0xYeah/yeahBox/base_app.mGitCommitHash=${commit_hash} -X github.com/0xYeah/yeahBox/base_app.mGitCommitTime=${formatted_time} -X github.com/0xYeah/yeahBox/base_app.mGoVersion=${go_version} -X github.com/0xYeah/yeahBox/base_app.mPackageOS=${OS_TYPE} -X github.com/0xYeah/yeahBox/base_app.mPackageTime=${build_time} -X github.com/0xYeah/yeahBox/base_app.mRunMode=${RUN_MODE} -s -w"
 
-    cd ./pre_app \
-    && go build -o ${build_path}/${RUN_MODE}/${product_name}_agent/${product_name}_agent -trimpath -ldflags "${ld_flag_agent}" ./main.go \
-    && chmod a+x ${build_path}/${RUN_MODE}/${product_name}_agent/${product_name}_agent \
-    && cp ./example_files/${product_name}_agent.service ${build_path}/${RUN_MODE}/${product_name}_agent \
-    && cp ./example_files/install_${product_name}_agent.sh ${build_path}/${RUN_MODE}/${product_name}_agent \
-    && mkdir -p ${build_path}/${RUN_MODE}/${product_name}_agent/conf \
-    && cp ./example_files/config_agent.example.json ${build_path}/${RUN_MODE}/${product_name}_agent/conf/config_agent.json
+    echo "build ${product_name}_${APP_TYPE}"
 
 
-#    package_files
+
+    local ld_flag_full=$ld_flag_master" -X github.com/0xYeah/yeahBox.base_app.mAppType=${APP_TYPE}"
+
+    go build -o ${build_path}/${RUN_MODE}/${product_name}_${APP_TYPE}/${product_name}_${APP_TYPE} -trimpath -ldflags "${ld_flag_full}" ./${product_name}_${APP_TYPE}/main.go \
+    && chmod a+x ${build_path}/${RUN_MODE}/${product_name}_${APP_TYPE}/${product_name}_${APP_TYPE} \
+    && cp ./example_files/${product_name}_${APP_TYPE}.service ${build_path}/${RUN_MODE}/${product_name}_${APP_TYPE} \
+    && cp ./example_files/install_${product_name}_${APP_TYPE}.sh ${build_path}/${RUN_MODE}/${product_name}_${APP_TYPE} \
+    && mkdir -p ${build_path}/${RUN_MODE}/${product_name}_${APP_TYPE}/conf \
+    && cp ./example_files/config_${APP_TYPE}.example.json ${build_path}/${RUN_MODE}/${product_name}_${APP_TYPE}/conf/config_${APP_TYPE}.json
+
+
+}
+
+function toBuild() {
+
+    rm -rf ${build_path}/${RUN_MODE}
+
+    mkdir -p ${build_path}/${RUN_MODE}
+
+
+     echo ${build_path}/${RUN_MODE}
+
+    build_with_type "server"
+    package_files "server"
+
+    build_with_type "agent"
+    package_files "agent"
 }
 
 function package_files(){
-
+    local APP_TYPE=$1
     local BUILD_OS_TYPE=$(echo "$OS_TYPE" | tr '[:upper:]' '[:lower:]')
 
     cd ${build_path}/${RUN_MODE} \
     && if [[ "$OS_TYPE" == "Windows" ]]; then
-            echo "package ${product_name}_server"
-            7z a ./${product_name}_server_${BUILD_OS_TYPE}_${RUN_MODE}_${CURRENT_VERSION}.zip ./${product_name}_server >/dev/null 2>&1
-            echo "package ${product_name}_agent"
-            7z a ./${product_name}_agent_${BUILD_OS_TYPE}_${RUN_MODE}_${CURRENT_VERSION}.zip ./${product_name}_agent >/dev/null 2>&1
+            echo "package ${product_name}_${APP_TYPE}"
+            7z a ./${product_name}_${APP_TYPE}_${BUILD_OS_TYPE}_${RUN_MODE}_${CURRENT_VERSION}.zip ./${product_name}_${APP_TYPE} >/dev/null 2>&1
         else
-            echo "package ${product_name}_server"
-            zip -r ./${product_name}_server_${BUILD_OS_TYPE}_${RUN_MODE}_${CURRENT_VERSION}.zip ./${product_name}_server
-            echo "package ${product_name}_agent"
-            zip -r ./${product_name}_agent_${BUILD_OS_TYPE}_${RUN_MODE}_${CURRENT_VERSION}.zip ./${product_name}_agent
+            echo "package ${product_name}_${APP_TYPE}"
+            zip -r ./${product_name}_${APP_TYPE}_${BUILD_OS_TYPE}_${RUN_MODE}_${CURRENT_VERSION}.zip ./${product_name}_${APP_TYPE}
         fi \
     && mkdir -p ../${UPLOAD_TMP_DIR} \
     && mv *.zip ../${UPLOAD_TMP_DIR} \
-    && cd ../
+    && cd ../../
 }
 
 

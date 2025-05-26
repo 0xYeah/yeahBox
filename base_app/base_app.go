@@ -20,6 +20,7 @@ var (
 	mPackageOS     = ""
 	mPackageTime   = ""
 	mGoVersion     = ""
+	mAppType       = ""
 )
 
 // setupApp 设置默认App
@@ -43,15 +44,13 @@ func setupApp(appType app_cfg.AppType) {
 		runMode = gtbox.RunModeDebug
 	}
 
-	projectName := fmt.Sprintf("%s_%s", config.ProjectName)
-	bundleID := fmt.Sprintf("%s_%s", config.ProjectBundleID)
-	description := fmt.Sprintf("%s %s", config.ProjectName)
+	projectName := fmt.Sprintf("%s_%s", config.ProjectName, appType)
+	bundleID := fmt.Sprintf("%s_%s", config.ProjectBundleID, appType)
+	description := fmt.Sprintf("%s %s", config.ProjectName, appType)
 
-	cfgPath := fmt.Sprintf("./conf/config_%s.yaml", appType)
+	app_cfg.CurrentApp = app_cfg.NewApp(projectName, config.ProjectVersion, bundleID, description, runMode)
 
-	app_cfg.CurrentApp = app_cfg.NewApp(projectName, cfgPath, bundleID, description, runMode)
-
-	app_cfg.CurrentApp.AppConfigFilePath = fmt.Sprintf("./conf/config_%s.json", app_cfg.CurrentApp.AppType)
+	app_cfg.CurrentApp.AppConfigFilePath = fmt.Sprintf("./conf/config_%s.yaml", appType)
 
 	//	TODO 初始化gtbox及log分片
 	if app_cfg.CurrentApp.CurrentRunMode == gtbox.RunModeDebug {
