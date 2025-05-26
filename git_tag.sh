@@ -4,7 +4,7 @@ set -e
 
 ProductName=$(grep ProjectName ./config/config.go | awk -F '"' '{print $2}' | sed 's/\"//g')
 Product_version_key="ProjectVersion"
-REPO_PFEX=wmyeah/$ProductName
+REPO_PFEX=0xYeah/$ProductName
 VersionFile=./config/config.go
 
 CURRENT_VERSION=$(grep ${Product_version_key} $VersionFile | awk -F '"' '{print $2}' | sed 's/\"//g')
